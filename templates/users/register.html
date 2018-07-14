@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>注册 - Todo</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/app.css') }}">
+    <meta name="viewport" content="width:device-width,initial-scale=1.0,user-scalable=no">
+  </head>
+  <body>
+    <div class="container register">
+      <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+          <ol class="breadcrumb">
+            <li><a href="{{ url_for('index') }}">LeanTodo</a></li>
+            <li class="active">注册</li>
+          </ol>
+          <div class="panel panel-default">
+            <div class="panel-body">
+              {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                  {% for message in messages %}
+                    <p class="text-danger"><span class="glyphicon glyphicon-remove-sign"></span> {{ message }}</p>
+                  {% endfor %}
+                {% endif %}
+              {% endwith %}
+              <h3>注册账号请打开我们的微信小程序，会自动注册</h3> 
+      <img src="http://baobaiqiang.oss-cn-beijing.aliyuncs.com/gh_92cb296c0f0a_258.jpg"  alt="小程序二维码" />
+            <div class="panel-footer">已经有了账户？<a href="{{ url_for('users.login') }}">去登录</a></div>
+          </div>
+          </div>
+      </div>
+    </div>
+  </body>
+</html>
