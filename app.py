@@ -3,6 +3,8 @@
 import os
 from io import BytesIO
 import os,base64
+from leancloud import Query
+from leancloud import Object
 from flask import Flask
 from flask import redirect
 from flask import url_for
@@ -39,6 +41,8 @@ except TypeError:
     sys.exit('未检测到密钥。请在 LeanCloud 控制台 > 云引擎 > 设置中新增一个名为 SECRET_KEY 的环境变量，再重试部署。')
 global cookie_data
 cookie_data = "mmsess=s%3A70opOTJ-kIHh0aI_RT3RJEOgM5xBwSZr.r2sEk%2BF%2FWID8qnVZomBfKI7U2pmmhHRYgBnzZeAaeR0"
+class Todo(Object):
+    pass
 class HTTPMethodOverrideMiddleware(object):
     """
     使用中间件以接受标准 HTTP 方法
@@ -71,9 +75,8 @@ app.register_blueprint(todos_view, url_prefix='/todos')
 app.register_blueprint(users_view, url_prefix='/users')
 
 
-@app.before_request
-def before_request():
-    g.user = leancloud.User.get_current()
+
+
 
 
 @app.route('/')
@@ -86,6 +89,16 @@ def Response_headers(content):
     return resp 
 @app.route('/help')
 def help():
+    Todo = Object.extend('Todo')
+    query = Query(Todo)
+
+    query.equal_to('sent', "0")
+    gameScores = query.find()
+    print (gameScores)
+    
+
+    
+
     return render_template('help.html')
 
 @app.route('/cookie',methods=['GET','POST'])
@@ -288,9 +301,12 @@ def wp5(id_data):
 def wp599(file):
     url = "blog.echo.cool/wp-content/plugins/wp-rest-api-for-app/qrcode/"+file
     url = "http://"+url
-    res = requests.get(url)
+    response = requests.get(url) # 将这个图片保存在内存
+    response = Response(response, mimetype="image/jpeg")
+    # 将这个图片从内存中打开，然后就可以用Image的方法进行操作了
    # print(res.text)
-    return res.raw.read() 
+   
+    return response
 #http://localhost:3000/wp-json/watch-life-net/v1/options/enableComment
 @app.route('/wp-json/watch-life-net/v1/options/enableComment',methods=['GET','POST'])
 def wp6():
@@ -339,3 +355,16 @@ def static_from_root():
 def get_file_content(filePath):
     with open(filePath, 'rb') as fp:
         return fp.read()
+
+
+@app.route('/sentMB')
+def sentMB():
+    Todo = leancloud.Object.extend('Todo')
+    query = Todo.query
+
+    query.equal_to('sent', 0)
+    query_list = query.find() #find unsent user
+    print (query_list)
+    return 1
+
+
