@@ -394,7 +394,7 @@ def sentMSG():
             data = {
                 "touser": openid,
                 "template_id": "jU-T8cBTkvhQ-xCzkGP4Ef8TrfeI3qkMQ_l_ZNaP9Ik",
-                "page": "/pages/index/index",
+                "page": "pages/index/index",
                 "form_id": formid,
                 "data":data2,
                 "emphasis_keyword": "keyword1.DATA"
