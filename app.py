@@ -17,7 +17,7 @@ from flask import render_template
 from werkzeug import Request
 import leancloud
 import requests
-import json  
+import json,random
 from views.todos import todos_view
 from views.users import users_view
 from aip import AipImageClassify
@@ -357,14 +357,59 @@ def get_file_content(filePath):
         return fp.read()
 
 
-@app.route('/sentMB')
-def sentMB():
-    Todo = leancloud.Object.extend('Todo')
-    query = Todo.query
+@app.route('/sentMSG',methods=['GET','POST'])
+def sentMSG():
+    one_data={
+                "TransCode":"030112",
+                "OpenId":"123456789",
+                "Body":"",
+            }
+    remind_data = ['又一个新任务？别怕，只要坚持一切都能完成',]
+    res = requests.post("https://api.hibai.cn/api/index/index",json = one_data)
+    res = json.loads(res.text)['Body']
 
-    query.equal_to('sent', 0)
-    query_list = query.find() #find unsent user
-    print (query_list)
-    return 1
+    for i in res:
+        remind_data.append(i['word'])
+    print(request.form.to_dict())
+    formid = request.form.to_dict()['formid']
+    openid = request.form.to_dict()['openid']
+    if(formid  != (None and "the formId is a mock one")and openid != None):
+            print(formid)
+            print(openid)
+            keyword1={
+                "value": "完成番茄时间！",
+            }
+            keyword2={
+                "value": "今天",
+            }
+            keyword3={
+                "value": remind_data[random.randint(0,len(remind_data)-1)],
+            }
+            data2={
+                "keyword1":keyword1,
+                "keyword2":keyword2,
+                "keyword3":keyword3,
+            }
+
+            data = {
+                "touser": openid,
+                "template_id": "jU-T8cBTkvhQ-xCzkGP4Ef8TrfeI3qkMQ_l_ZNaP9Ik",
+                "page": "/pages/index/index",
+                "form_id": formid,
+                "data":data2,
+                "emphasis_keyword": "keyword1.DATA"
+            }
+            headers={
+                 'Connection': 'keep-alive',
+                 'Content-Type':'application/json',
+            }
+            print(data)
+            res = requests.get('https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx08d8f52ad361f6e8&secret=b635b95d8bda0e8dcb8cb9a989bdc4f0')
+            access_token = json.loads(res.text)['access_token']
+            res = requests.post("https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token="+access_token,json = data)
+            print(res.text)
+    return res.text
+
+
 
 
