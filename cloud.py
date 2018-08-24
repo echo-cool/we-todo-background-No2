@@ -12,7 +12,8 @@ from app import app
 import leancloud
 import requests,json,datetime
 engine = Engine(app)
-
+global remind_data
+remind_data=['这个任务还没有完成，记得去完成哦~','又一个新任务？别怕，只要坚持一切都能完成','']
 @engine.before_save('Todo')
 def before_todo_save(todo):
     content = todo.get('content')
@@ -33,7 +34,8 @@ def before_todo_save(todo):
 
 @engine.define
 def sentMSG():
-    remind_data=['这个任务还没有完成，记得去完成哦~','又一个新任务？别怕，只要坚持一切都能完成','']
+    global  remind_data
+    print("Len of remind_data: "+str(len(remind_data)))
     one_data={
                 "TransCode":"030112",
                 "OpenId":"123456789",
@@ -47,14 +49,14 @@ def sentMSG():
         remind_data.append(i['word'])
     #res = requests.get("https://api.lwl12.com/hitokoto/v1?encode=realjson")
     #print(json.loads(res.text))
-    print(sent_list)
+    #print(sent_list)
     for i in sent_list:
-        print(i)
+        #print(i)
         formid = i.get("formid")
         openid = i.get("openid")
         content = i.get("content")
         time  = i.get("createdAt").strftime('%Y-%m-%d %H:%M:%S')
-        print(type(time))
+        #print(type(time))
         if(formid  != (None and "the formId is a mock one")and openid != None):
             print(formid)
             print(openid)
@@ -95,13 +97,14 @@ def sentMSG():
                  'Connection': 'keep-alive',
                  'Content-Type':'application/json',
             }
-            print(data)
+           # print(data)
             res = requests.get('https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx08d8f52ad361f6e8&secret=b635b95d8bda0e8dcb8cb9a989bdc4f0')
             access_token = json.loads(res.text)['access_token']
             res = requests.post("https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token="+access_token,json = data)
-            print(res.text)
+            #print(res.text)
             
             i.set('sent', 1)
+            i.set('statue_MSG',res.text)
             i.save()
     return "Done"
 
