@@ -13,7 +13,7 @@ import leancloud
 import requests,json,datetime
 engine = Engine(app)
 global remind_data
-remind_data=['这个任务还没有完成，记得去完成哦~','又一个新任务？别怕，只要坚持一切都能完成','']
+remind_data=['这个任务还没有完成，记得去完成哦~','又一个新任务？别怕，只要坚持一切都能完成',]
 @engine.before_save('Todo')
 def before_todo_save(todo):
     content = todo.get('content')
@@ -50,6 +50,7 @@ def sentMSG():
     #res = requests.get("https://api.lwl12.com/hitokoto/v1?encode=realjson")
     #print(json.loads(res.text))
     #print(sent_list)
+    print("Len of remind_data: " + str(len(remind_data)))
     for i in sent_list:
         #print(i)
         formid = i.get("formid")
